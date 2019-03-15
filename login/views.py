@@ -9,7 +9,7 @@ from django.contrib.auth.models import User   #导入django自带的user表
 # 登陆或者注册
 def login_or_regist(request):
     if request.method=='GET':
-        return render(request, 'login_or_regist.html')
+        return render(request, 'login/login_or_regist.html')
     else:
         if request.POST.get('regist'):
             print("正在进行用户注册")
@@ -24,11 +24,11 @@ def login_or_regist(request):
                     print("注册成功")
                 else:
                     print("注册失败")
-                return render(request, 'login_or_regist.html')
+                return render(request, 'login/login_or_regist.html')
             except:
                 raise
                 print('用户已经存在')
-                return render(request, 'login_or_regist.html')
+                return render(request, 'login/login_or_regist.html')
         else:
             print('正在进行用户登陆功能')
             # 获取用户POST到服务器的账号和密码
@@ -42,11 +42,10 @@ def login_or_regist(request):
                 return redirect(reverse('login_or_regist'))
             else:
                 print('登陆失败')
-                return render(request, 'login_or_regist.html')
+                return render(request, 'login/login_or_regist.html')
 
-# 首页
-def index(request):
-    return render(request, 'login_or_regist.html')
+def forgrt(request):
+    return render(request,'login/forget.html')
 
 
 
