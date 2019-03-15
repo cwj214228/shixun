@@ -2,38 +2,51 @@ from django.shortcuts import render
 
 # Create your views here.
 from django.shortcuts import render,redirect,reverse
-from django.db import connection
+from django.contrib import auth
+from django.contrib.auth.models import User   #导入django自带的user表
 
-# 访问首页，如果已经登陆，则进入首页，否则跳转到登陆页面
-from login.models import Userlist
 
-# 登陆页面
-def login(request):
+# 登陆或者注册
+def login_or_regist(request):
     if request.method=='GET':
-        return render(request,'login.html')
+        return render(request, 'login_or_regist.html')
     else:
-        # 获取用户POST到服务器的账号和密码
-        username = request.POST.get('username')
-        password = request.POST.get('password')
-        try:
-            # 通过ORM的方式，获取数据库的用户密码
-            password_db = Userlist.objects.get(username=username).password
-            # 判断密码是否正确，正确的话，就跳转到首页
-            if password == password_db:
-                # 把用户的username加入会话中
-                request.session['username'] = username
-                return redirect(reverse('index'))
+        if request.POST.get('regist'):
+            print("正在进行用户注册")
+            # 获取用户POST到服务器的账号和密码
+            username = request.POST.get('user_name')
+            password = request.POST.get('password')
+            email = request.POST.get('user_email')
+            try:
+                # 把注册信息写入数据库中，返回的是注册的用户名，需要str()才能打印出来
+                registAdd = User.objects.create_user(username=username, password=password, email=email,first_name=username,last_name=username,is_staff=0,is_active=1)
+                if str(registAdd) == username:
+                    print("注册成功")
+                else:
+                    print("注册失败")
+                return render(request, 'login_or_regist.html')
+            except:
+                raise
+                print('用户已经存在')
+                return render(request, 'login_or_regist.html')
+        else:
+            print('正在进行用户登陆功能')
+            # 获取用户POST到服务器的账号和密码
+            username = request.POST.get('login_user_name')
+            password = request.POST.get('login_password')
+            # 正在验证用户名和密码
+            user = auth.authenticate(username=username, password=password)
+            if user is not None and user.is_active:
+                auth.login(request, user)
+                print('登陆成功，用户的username成功加入session中')
+                return redirect(reverse('login_or_regist'))
             else:
-                print('账号或者密码错误！')
-                return render(request, 'login.html')
-        except:
-            print('账号尚未注册！')
-            return render(request,'login.html')
-
+                print('登陆失败')
+                return render(request, 'login_or_regist.html')
 
 # 首页
 def index(request):
-    return render(request,'index.html')
+    return render(request, 'login_or_regist.html')
 
 
 
