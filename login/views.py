@@ -39,7 +39,7 @@ def login_or_regist(request):
             if user is not None and user.is_active:
                 auth.login(request, user)
                 print('登陆成功，用户的username成功加入session中')
-                return redirect(reverse('login_or_regist'))
+                return redirect(reverse('index'))
             else:
                 print('登陆失败')
                 return render(request, 'login/login_or_regist.html')
